@@ -3,23 +3,31 @@
 A modern job platform with real-time interview request features for both applicants and recruiters. Built with **React, Vite, Node.js, Express, MongoDB**, and **Socket.IO**.
 
 ---
+
 ## Frontend Deployed Link :-https://jobapplyplateform.netlify.app/
+
+- User : can create a account for himself
+- Admin / Recruiter : email: admin@gmail.com password: admin
+
 ## Backend Deployed Link :- https://job-interview-sm41.onrender.com
 
 ## 🚀 Features
 
 ### Applicant Features
+
 - Submit interview requests with live feedback
 - Choose from job titles or enter custom ones
 - Form validation with error messages
 - Responsive and mobile-friendly UI
 
 ### Recruiter Features
+
 - Real-time dashboard updates (no refresh needed)
 - Accept interview requests in one click
 - Visual connection status indicators
 
 ### Technical Highlights
+
 - WebSocket-powered updates using **Socket.IO**
 - RESTful API built with **Express.js**
 - Database with **MongoDB + Mongoose**
@@ -31,6 +39,7 @@ A modern job platform with real-time interview request features for both applica
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **React 18** + **Vite**
 - **React Router DOM**
 - **Socket.IO Client**
@@ -39,6 +48,7 @@ A modern job platform with real-time interview request features for both applica
 - **Lucide React** (optional icons)
 
 ### Backend
+
 - **Node.js** + **Express.js**
 - **MongoDB** + **Mongoose**
 - **Socket.IO Server**
@@ -49,6 +59,7 @@ A modern job platform with real-time interview request features for both applica
 ## 📁 Project Structure
 
 ### Frontend (`job-platform-frontend`)
+
 ```
 src/
 ├── components/
@@ -60,6 +71,7 @@ src/
 ```
 
 ### Backend (`job-platform-backend`)
+
 ```
 .
 ├── controllers/
@@ -74,6 +86,7 @@ src/
 ## ⚙️ Setup Instructions
 
 ### 🔹 Prerequisites
+
 - Node.js v16+
 - MongoDB (local or Atlas)
 - npm or yarn
@@ -108,12 +121,12 @@ Backend runs at: `http://localhost:5000`
 
 ### REST API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/interview-requests` | Fetch all requests (supports ?status=pending) |
-| `POST` | `/api/interview-requests` | Submit new interview request |
-| `PUT` | `/api/interview-requests/:id/accept` | Accept an interview request |
-| `GET` | `/api/health` | Health check |
+| Method | Endpoint                             | Description                                   |
+| ------ | ------------------------------------ | --------------------------------------------- |
+| `GET`  | `/api/interview-requests`            | Fetch all requests (supports ?status=pending) |
+| `POST` | `/api/interview-requests`            | Submit new interview request                  |
+| `PUT`  | `/api/interview-requests/:id/accept` | Accept an interview request                   |
+| `GET`  | `/api/health`                        | Health check                                  |
 
 ### Data Schema
 
@@ -130,23 +143,25 @@ Backend runs at: `http://localhost:5000`
 
 ### Socket.IO Events
 
-| Event | Description |
-|-------|-------------|
-| `newInterviewRequest` | Emitted on new submission |
-| `requestAccepted` | Emitted when accepted |
-| `connect` / `disconnect` | Socket connection status |
+| Event                    | Description               |
+| ------------------------ | ------------------------- |
+| `newInterviewRequest`    | Emitted on new submission |
+| `requestAccepted`        | Emitted when accepted     |
+| `connect` / `disconnect` | Socket connection status  |
 
 ---
 
 ## 🌐 Environment Variables
 
 ### Frontend (`.env`)
+
 ```env
 VITE_API_BASE_URL=http://localhost:5000
 VITE_SOCKET_URL=http://localhost:5000
 ```
 
 ### Backend (`.env`)
+
 ```env
 MONGODB_URI=mongodb://localhost:27017/job-platform
 PORT=5000
@@ -160,6 +175,7 @@ FRONTEND_URL=http://localhost:3000
 ### Scripts
 
 Frontend:
+
 ```bash
 npm run dev       # Development server
 npm run build     # Production build
@@ -167,6 +183,7 @@ npm run preview   # Preview build
 ```
 
 Backend:
+
 ```bash
 npm run dev       # Development server with nodemon
 npm start         # Production server
@@ -175,10 +192,12 @@ npm start         # Production server
 ### Deployment Options
 
 #### Frontend
+
 - **Vercel**: `vercel`
 - **Netlify**: Drag and drop `dist`
 
 #### Backend
+
 - **Render / Railway / Heroku**
 - Use MongoDB Atlas for cloud DB
 
