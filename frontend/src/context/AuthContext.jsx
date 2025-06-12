@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("job-user-data", JSON.stringify(data.user));
         setToken(data.token);
         showToast(data.message, "success");
-        setTimeout(() => navigate("/"), 1000); // ✅ navigate instead of state
+        navigate("/");
       } else {
         showToast(data.message || "Signup failed", "error");
       }
@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("job-user-data", JSON.stringify(data.user));
         setToken(data.token);
         showToast(data.message, "success");
-        setTimeout(() => navigate("/"), 1000); // ✅ navigate instead of state
+        navigate("/");
       } else {
         showToast(data.message || "Login failed", "error");
       }
