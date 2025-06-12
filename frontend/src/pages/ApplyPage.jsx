@@ -114,6 +114,7 @@ const ApplyPage = () => {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
+            className="form-input"
             disabled={isSubmitting}
           />
         </div>
@@ -126,6 +127,7 @@ const ApplyPage = () => {
             name="email"
             value={formData.email}
             onChange={handleInputChange}
+            className="form-input"
             disabled={isSubmitting}
           />
         </div>
@@ -137,6 +139,7 @@ const ApplyPage = () => {
             name="jobTitle"
             value={formData.jobTitle}
             onChange={handleInputChange}
+            className="form-input"
             disabled={isSubmitting}
           >
             <option value="">Select a job title</option>
