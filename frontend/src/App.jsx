@@ -6,8 +6,10 @@ import Navigation from "./components/Navigation";
 import "./App.css";
 import LoginPage from "./pages/LoginPage";
 import PrivateRoutes from "./components/PrivateRoutes";
+import { useAuth } from "./context/AuthContext";
 
 function App() {
+  const { token } = useAuth();
   return (
     <div className="app">
       <Navigation />
@@ -34,7 +36,7 @@ function App() {
             path="/"
             element={
               // <PrivateRoutes>
-              <Navigate to="/apply" replace />
+              <Navigate to={token == "admin-token" ? "/recruiter" : "/apply"} replace />
               // </PrivateRoutes>
             }
           />

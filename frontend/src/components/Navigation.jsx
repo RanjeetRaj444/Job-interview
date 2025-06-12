@@ -24,7 +24,7 @@ const Navigation = () => {
           JobPlatform
         </Link>
         <ul className="nav-links">
-          <li>
+          <li style={{ display: token == "admin-token" ? "none" : "" }}>
             <Link
               to="/apply"
               className={`nav-link ${
@@ -35,7 +35,7 @@ const Navigation = () => {
             </Link>
           </li>
 
-          <li>
+          <li style={{ display: token == "admin-token" ? "" : "none" }}>
             <Link
               to="/recruiter"
               className={`nav-link ${

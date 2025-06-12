@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getInterviewRequests, acceptInterviewRequest } from "../services/api";
-import { connectSocket, disconnectSocket } from "../services/socket";
+import { connectSocket, getSocket } from "../services/socket";
 import "../styles/recruiterPage.css";
 
 const RecruiterPage = () => {
@@ -9,29 +9,40 @@ const RecruiterPage = () => {
   const [error, setError] = useState("");
   const [acceptingIds, setAcceptingIds] = useState(new Set());
   const [isConnected, setIsConnected] = useState(false);
+  const audio = new Audio("/ting.mp3"); // ✅ Make sure the path is correct (public folder)
 
   useEffect(() => {
     const loadDataAndConnect = async () => {
-      await loadRequests();
+      try {
+        const { data } = await getInterviewRequests();
+        setRequests(data);
+      } catch (err) {
+        setError("Failed to load interview requests");
+      } finally {
+        setLoading(false);
+      }
+
       const socket = connectSocket();
 
       socket.on("connect", () => {
         setIsConnected(true);
-        // console.log("Connected to server");
       });
 
       socket.on("disconnect", () => {
         setIsConnected(false);
-        // console.log("Disconnected from server");
       });
 
+      // 🔔 Handle new interview request
       socket.on("new_interview_request", (newRequest) => {
-        // console.log("New interview request received:", newRequest);
         setRequests((prev) => [newRequest, ...prev]);
+        audio.play().catch((err) => {
+          console.error("Audio play error:", err);
+        });
+        console.log("🔔 New interview request received:", newRequest);
       });
 
+      // ✅ Handle acceptance updates
       socket.on("request_accepted", (updatedRequest) => {
-        // console.log("Request accepted:", updatedRequest);
         setRequests((prev) =>
           prev.map((req) =>
             req._id === updatedRequest._id ? updatedRequest : req
@@ -42,36 +53,19 @@ const RecruiterPage = () => {
 
     loadDataAndConnect();
 
-    return () => disconnectSocket();
+    // Don’t disconnect socket here, to keep real-time behavior across sessions.
   }, []);
-
-  const loadRequests = async () => {
-    try {
-      setError("");
-      const { data } = await getInterviewRequests();
-      setRequests(data);
-    } catch (err) {
-      // console.error("Load requests error:", err);
-      setError("Failed to load interview requests");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleAccept = async (requestId) => {
     setAcceptingIds((prev) => new Set(prev).add(requestId));
-
     try {
       await acceptInterviewRequest(requestId);
-
-      // ✅ Optimistically update the status to "accepted"
       setRequests((prev) =>
         prev.map((req) =>
           req._id === requestId ? { ...req, status: "accepted" } : req
         )
       );
     } catch (err) {
-      // console.error("Accept request error:", err);
       setError("Failed to accept request");
     } finally {
       setAcceptingIds((prev) => {
