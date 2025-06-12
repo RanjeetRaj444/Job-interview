@@ -6,10 +6,11 @@ const socketIo = require("socket.io");
 require("dotenv").config();
 
 const interviewRequestsRouter = require("./routes/interviewRequests");
-const authRoutes = require("./routes/auth.routes.js");
+const authRoutes = require("./routes/auth.routes");
 
 const app = express();
 const server = http.createServer(app);
+
 const io = socketIo(server, {
   cors: {
     origin: "*",
@@ -17,20 +18,11 @@ const io = socketIo(server, {
   },
 });
 
-const PORT = process.env.PORT || 8080;
-const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/job-platform";
-
 // Middleware
-app.use(
-  cors({
-    origin: "*",
-    credentials: true,
-  })
-);
+app.use(cors({ origin: "*", credentials: true }));
 app.use(express.json());
 
-// Make io accessible to routes
+// Attach io to each request
 app.use((req, res, next) => {
   req.io = io;
   next();
@@ -40,7 +32,7 @@ app.use((req, res, next) => {
 app.use("/api/interview-requests", interviewRequestsRouter);
 app.use("/api", authRoutes);
 
-// Basic health check endpoint
+// Health check
 app.get("/api/health", (req, res) => {
   res.json({
     message: "Server is running",
@@ -48,35 +40,39 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Socket.io connection handling
+// Socket.io connection
 io.on("connection", (socket) => {
-  console.log("Client connected:", socket.id);
+  console.log("🔌 Client connected:", socket.id);
 
   socket.on("disconnect", () => {
-    console.log("Client disconnected:", socket.id);
+    console.log("❌ Client disconnected:", socket.id);
   });
 });
 
-// Connect to MongoDB
+// MongoDB connection
+const PORT = process.env.PORT || 8080;
+const MONGODB_URI =
+  process.env.MONGODB_URI || "mongodb://localhost:27017/job-platform";
+
 mongoose
   .connect(MONGODB_URI)
   .then(() => {
-    console.log("Connected to MongoDB");
+    console.log("✅ Connected to MongoDB");
     server.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   })
-  .catch((error) => {
-    console.error("MongoDB connection error:", error);
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
     process.exit(1);
   });
 
 // Graceful shutdown
 process.on("SIGINT", async () => {
-  console.log("Shutting down gracefully...");
+  console.log("🔻 Shutting down gracefully...");
   await mongoose.connection.close();
   server.close(() => {
-    console.log("Server closed");
+    console.log("🔒 Server closed");
     process.exit(0);
   });
 });

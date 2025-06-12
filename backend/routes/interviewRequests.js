@@ -1,17 +1,14 @@
 const express = require('express');
 const InterviewRequest = require('../models/InterviewRequest');
-
 const router = express.Router();
 
-// GET /api/interview-requests - Fetch all interview requests (or filter by status)
+// GET /api/interview-requests - Fetch all interview requests (optional filter by status)
 router.get('/', async (req, res) => {
   try {
     const { status } = req.query;
     const filter = status ? { status } : {};
-    
-    const requests = await InterviewRequest.find(filter)
-      .sort({ createdAt: -1 })
-      .lean();
+
+    const requests = await InterviewRequest.find(filter).sort({ createdAt: -1 }).lean();
 
     res.json({
       success: true,
@@ -22,8 +19,7 @@ router.get('/', async (req, res) => {
     console.error('Error fetching interview requests:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch interview requests',
-      error: error.message
+      message: 'Failed to fetch interview requests'
     });
   }
 });
@@ -33,7 +29,6 @@ router.post('/', async (req, res) => {
   try {
     const { name, email, jobTitle } = req.body;
 
-    // Basic validation
     if (!name || !email || !jobTitle) {
       return res.status(400).json({
         success: false,
@@ -41,7 +36,6 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Create new interview request
     const newRequest = new InterviewRequest({
       name: name.trim(),
       email: email.trim().toLowerCase(),
@@ -51,7 +45,7 @@ router.post('/', async (req, res) => {
     const savedRequest = await newRequest.save();
 
     // Emit real-time event to connected recruiters
-    req.io.emit('newInterviewRequest', savedRequest);
+    req.io.emit('new_interview_request', savedRequest); // 👈 Updated event name to match frontend
 
     res.status(201).json({
       success: true,
@@ -60,31 +54,19 @@ router.post('/', async (req, res) => {
     });
   } catch (error) {
     console.error('Error creating interview request:', error);
-    
-    // Handle validation errors
-    if (error.name === 'ValidationError') {
-      const validationErrors = Object.values(error.errors).map(err => err.message);
-      return res.status(400).json({
-        success: false,
-        message: 'Validation failed',
-        errors: validationErrors
-      });
-    }
 
     res.status(500).json({
       success: false,
-      message: 'Failed to submit interview request',
-      error: error.message
+      message: 'Failed to submit interview request'
     });
   }
 });
 
-// PUT /api/interview-requests/:id/accept - Mark a request as accepted
+// PUT /api/interview-requests/:id/accept - Mark request as accepted
 router.put('/:id/accept', async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate ObjectId format
     if (!id.match(/^[0-9a-fA-F]{24}$/)) {
       return res.status(400).json({
         success: false,
@@ -95,7 +77,7 @@ router.put('/:id/accept', async (req, res) => {
     const updatedRequest = await InterviewRequest.findByIdAndUpdate(
       id,
       { status: 'accepted' },
-      { new: true, runValidators: true }
+      { new: true }
     );
 
     if (!updatedRequest) {
@@ -106,7 +88,7 @@ router.put('/:id/accept', async (req, res) => {
     }
 
     // Emit real-time event to update recruiters
-    req.io.emit('requestAccepted', updatedRequest);
+    req.io.emit('request_accepted', updatedRequest); // 👈 Updated event name to match frontend
 
     res.json({
       success: true,
@@ -117,13 +99,12 @@ router.put('/:id/accept', async (req, res) => {
     console.error('Error accepting interview request:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to accept interview request',
-      error: error.message
+      message: 'Failed to accept interview request'
     });
   }
 });
 
-// GET /api/interview-requests/:id - Get single interview request (bonus endpoint)
+// Optional: GET /api/interview-requests/:id - Get single interview request
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -152,8 +133,7 @@ router.get('/:id', async (req, res) => {
     console.error('Error fetching interview request:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch interview request',
-      error: error.message
+      message: 'Failed to fetch interview request'
     });
   }
 });
