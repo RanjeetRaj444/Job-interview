@@ -1,15 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { getInterviewRequests, acceptInterviewRequest } from "../services/api";
-import { connectSocket, getSocket } from "../services/socket";
+import { connectSocket } from "../services/socket";
 import "../styles/recruiterPage.css";
+import { useAuth } from "../context/AuthContext";
+import Toast from "../components/Toast";
 
 const RecruiterPage = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { toast, closeToast, showToast } = useAuth();
   const [acceptingIds, setAcceptingIds] = useState(new Set());
   const [isConnected, setIsConnected] = useState(false);
-  const audio = new Audio("/ting.mp3"); // ✅ Make sure the path is correct (public folder)
+  const [canPlayAudio, setCanPlayAudio] = useState(false);
+  const audio = new Audio("/ting.mp3"); // Make sure this is in the public folder
+
+  useEffect(() => {
+    // Enable sound only after user interaction
+    const enableAudio = () => {
+      setCanPlayAudio(true);
+      window.removeEventListener("click", enableAudio);
+    };
+    window.addEventListener("click", enableAudio);
+  }, []);
 
   useEffect(() => {
     const loadDataAndConnect = async () => {
@@ -35,10 +48,18 @@ const RecruiterPage = () => {
       // 🔔 Handle new interview request
       socket.on("new_interview_request", (newRequest) => {
         setRequests((prev) => [newRequest, ...prev]);
-        audio.play().catch((err) => {
-          console.error("Audio play error:", err);
-        });
-        alert(`🔔 New interview request received: ${newRequest}`);
+
+        if (canPlayAudio) {
+          audio.play().catch((err) => {
+            console.error("Audio play error:", err);
+          });
+        }
+
+        showToast(
+          `🔔 New interview request received: ${newRequest.name}`,
+          "success"
+        );
+        console.log(newRequest);
       });
 
       // ✅ Handle acceptance updates
@@ -52,9 +73,7 @@ const RecruiterPage = () => {
     };
 
     loadDataAndConnect();
-
-    // Don’t disconnect socket here, to keep real-time behavior across sessions.
-  }, []);
+  }, [canPlayAudio]);
 
   const handleAccept = async (requestId) => {
     setAcceptingIds((prev) => new Set(prev).add(requestId));
@@ -130,8 +149,8 @@ const RecruiterPage = () => {
               </tr>
             </thead>
             <tbody>
-              {requests.map((request) => (
-                <tr key={request._id}>
+              {requests.map((request, ind) => (
+                <tr key={ind}>
                   <td data-label="Name">{request.name}</td>
                   <td data-label="Email">
                     <a href={`mailto:${request.email}`} className="email-link">
@@ -178,6 +197,9 @@ const RecruiterPage = () => {
             </tbody>
           </table>
         </div>
+      )}
+      {toast && (
+        <Toast message={toast.message} type={toast.type} onClose={closeToast} />
       )}
     </div>
   );
