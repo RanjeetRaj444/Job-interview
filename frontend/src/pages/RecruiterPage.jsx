@@ -38,7 +38,7 @@ const RecruiterPage = () => {
         audio.play().catch((err) => {
           console.error("Audio play error:", err);
         });
-        console.log("🔔 New interview request received:", newRequest);
+        alert(`🔔 New interview request received: ${newRequest}`);
       });
 
       // ✅ Handle acceptance updates
