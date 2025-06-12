@@ -19,17 +19,17 @@ function App() {
         <Navigation />
         <main className="main-content">
           <Routes>
+            <Route path="/apply" element={<ApplyPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/recruiter" element={<RecruiterPage />} />
             <Route
-              path="/apply"
+              path="/"
               element={
                 <PrivateRoutes>
-                  <ApplyPage />
+                  <Navigate to="/apply" replace />{" "}
                 </PrivateRoutes>
               }
             />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/recruiter" element={<RecruiterPage />} />
-            <Route path="/" element={<Navigate to="/apply" replace />} />
           </Routes>
         </main>
       </div>

@@ -10,6 +10,7 @@ export const useAuth = () => useContext(AuthContext);
 // AuthProvider component
 export const AuthProvider = ({ children }) => {
   const [redirectToHome, setRedirectToHome] = useState(false);
+  const [loading, setLoding] = useState(false);
 
   const [toast, setToast] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("job-user-token"));
@@ -26,14 +27,18 @@ export const AuthProvider = ({ children }) => {
   }
   async function handleSignUp(e) {
     e.preventDefault();
+    setLoding(true);
     try {
-      const res = await fetch("https://job-interview-sm41.onrender.com/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        "https://job-interview-sm41.onrender.com/api/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const data = await res.json();
 
@@ -43,16 +48,19 @@ export const AuthProvider = ({ children }) => {
         setToken(localStorage.getItem("job-user-token"));
         showToast(data.message, "success");
         setTimeout(() => setRedirectToHome(true), 1000); // allow toast to show
+        setLoding(false);
       } else {
         showToast(data.message || "Login failed", "error");
+        setLoding(false);
       }
     } catch (error) {
       console.error("Login error:", error);
       showToast("Something went wrong!", "error");
+      setLoding(false);
     }
 
     // console.log("Clicked Signup", formData);
-    showToast("Signup success! (not implemented)", "success");
+    // showToast("Signup success! (not implemented)", "success");
     e.target.reset();
   }
   const showToast = (msg, type) => {
@@ -72,14 +80,18 @@ export const AuthProvider = ({ children }) => {
 
   async function handleLogin(e) {
     e.preventDefault();
+    setLoding(true);
     try {
-      const res = await fetch("https://job-interview-sm41.onrender.com/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        "https://job-interview-sm41.onrender.com/api/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const data = await res.json();
 
@@ -89,12 +101,15 @@ export const AuthProvider = ({ children }) => {
         setToken(localStorage.getItem("job-user-token"));
         showToast(data.message, "success");
         setTimeout(() => setRedirectToHome(true), 1000); // allow toast to show
+        setLoding(false);
       } else {
         showToast(data.message || "Login failed", "error");
+        setLoding(false);
       }
     } catch (error) {
       console.error("Login error:", error);
       showToast("Something went wrong!", "error");
+      setLoding(false);
     }
     e.target.reset();
   }
@@ -112,6 +127,7 @@ export const AuthProvider = ({ children }) => {
         token,
         handleLogin,
         logout,
+        loading,
       }}
     >
       {children}

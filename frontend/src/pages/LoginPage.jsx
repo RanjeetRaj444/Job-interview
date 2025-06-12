@@ -14,6 +14,7 @@ const LoginPage = () => {
     handleSignUp,
     handleLogin,
     handleInputChange,
+    loading,
   } = useAuth();
 
   if (redirectToHome) {
@@ -83,8 +84,9 @@ const LoginPage = () => {
           type="button"
           onClick={() => setIsLoginState(!isLoginState)}
           className="toggle-auth-btn"
+          disabled={`${loading}`}
         >
-          {isLoginState ? "Login" : "Sign Up"}
+          {loading ? "Loading..." : isLoginState ? "Login" : "Sign Up"}
         </button>
       </p>
 
