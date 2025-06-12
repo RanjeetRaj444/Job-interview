@@ -3,6 +3,8 @@
 A modern job platform with real-time interview request features for both applicants and recruiters. Built with **React, Vite, Node.js, Express, MongoDB**, and **Socket.IO**.
 
 ---
+## Frontend Deployed Link :-https://jobapplyplateform.netlify.app/
+## Backend Deployed Link :- https://job-interview-sm41.onrender.com
 
 ## 🚀 Features
 

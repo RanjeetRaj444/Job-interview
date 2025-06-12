@@ -4,7 +4,7 @@ let socket = null;
 
 export const connectSocket = () => {
   if (!socket) {
-    socket = io("http://localhost:8080", {
+    socket = io("https://job-interview-sm41.onrender.com", {
       transports: ["websocket", "polling"],
       timeout: 20000,
     });

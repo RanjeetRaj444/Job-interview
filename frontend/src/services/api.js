@@ -1,5 +1,5 @@
 // API service for backend communication
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = 'https://job-interview-sm41.onrender.com/api';
 
 // Submit interview request
 export const submitInterviewRequest = async (requestData) => {
