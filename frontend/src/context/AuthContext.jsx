@@ -1,41 +1,38 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// Create the context
 const AuthContext = createContext();
 
-// Custom hook to use the AuthContext
 export const useAuth = () => useContext(AuthContext);
 
-// AuthProvider component
 export const AuthProvider = ({ children }) => {
-  const [redirectToHome, setRedirectToHome] = useState(false);
-  const [loading, setLoding] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("job-user-token"));
-
+  const [token, setToken] = useState(() =>
+    localStorage.getItem("job-user-token")
+  );
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
   });
 
+  const navigate = useNavigate();
+
   function handleInputChange(event) {
     const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }
+
   async function handleSignUp(e) {
     e.preventDefault();
-    setLoding(true);
+    setLoading(true);
     try {
       const res = await fetch(
         "https://job-interview-sm41.onrender.com/api/register",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         }
       );
@@ -45,24 +42,54 @@ export const AuthProvider = ({ children }) => {
       if (res.ok) {
         localStorage.setItem("job-user-token", data.token);
         localStorage.setItem("job-user-data", JSON.stringify(data.user));
-        setToken(localStorage.getItem("job-user-token"));
+        setToken(data.token);
         showToast(data.message, "success");
-        setTimeout(() => setRedirectToHome(true), 1000); // allow toast to show
-        setLoding(false);
+        setTimeout(() => navigate("/"), 1000); // ✅ navigate instead of state
+      } else {
+        showToast(data.message || "Signup failed", "error");
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      showToast("Something went wrong!", "error");
+    } finally {
+      setLoading(false);
+      e.target.reset();
+    }
+  }
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch(
+        "https://job-interview-sm41.onrender.com/api/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem("job-user-token", data.token);
+        localStorage.setItem("job-user-data", JSON.stringify(data.user));
+        setToken(data.token);
+        showToast(data.message, "success");
+        setTimeout(() => navigate("/"), 1000); // ✅ navigate instead of state
       } else {
         showToast(data.message || "Login failed", "error");
-        setLoding(false);
       }
     } catch (error) {
       console.error("Login error:", error);
       showToast("Something went wrong!", "error");
-      setLoding(false);
+    } finally {
+      setLoading(false);
+      e.target.reset();
     }
-
-    // console.log("Clicked Signup", formData);
-    // showToast("Signup success! (not implemented)", "success");
-    e.target.reset();
   }
+
   const showToast = (msg, type) => {
     setToast({ message: msg, type });
   };
@@ -74,49 +101,13 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("job-user-token");
     localStorage.removeItem("job-user-data");
-    // setUser(null);
     setToken(null);
+    showToast("Logout", "success");
   };
 
-  async function handleLogin(e) {
-    e.preventDefault();
-    setLoding(true);
-    try {
-      const res = await fetch(
-        "https://job-interview-sm41.onrender.com/api/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-
-      const data = await res.json();
-
-      if (res.ok) {
-        localStorage.setItem("job-user-token", data.token);
-        localStorage.setItem("job-user-data", JSON.stringify(data.user));
-        setToken(localStorage.getItem("job-user-token"));
-        showToast(data.message, "success");
-        setTimeout(() => setRedirectToHome(true), 1000); // allow toast to show
-        setLoding(false);
-      } else {
-        showToast(data.message || "Login failed", "error");
-        setLoding(false);
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      showToast("Something went wrong!", "error");
-      setLoding(false);
-    }
-    e.target.reset();
-  }
   return (
     <AuthContext.Provider
       value={{
-        redirectToHome,
         setFormData,
         formData,
         showToast,
@@ -128,6 +119,7 @@ export const AuthProvider = ({ children }) => {
         handleLogin,
         logout,
         loading,
+        toast,
       }}
     >
       {children}

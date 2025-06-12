@@ -5,21 +5,16 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const LoginPage = () => {
-  const [toast, setToast] = useState(null);
   const [isLoginState, setIsLoginState] = useState(false);
   const {
-    redirectToHome,
     formData,
     closeToast,
     handleSignUp,
     handleLogin,
     handleInputChange,
     loading,
+    toast,
   } = useAuth();
-
-  if (redirectToHome) {
-    return <Navigate to="/" replace />;
-  }
 
   return (
     <div className="form-container">
@@ -74,7 +69,7 @@ const LoginPage = () => {
         </div>
 
         <button type="submit" className="form-button">
-          {isLoginState ? "Sign Up" : "Login"}
+          {loading ? "Loading..." : isLoginState ? "Sign Up" : "Login"}
         </button>
       </form>
 
@@ -84,9 +79,9 @@ const LoginPage = () => {
           type="button"
           onClick={() => setIsLoginState(!isLoginState)}
           className="toggle-auth-btn"
-          disabled={`${loading}`}
+          disabled={loading}
         >
-          {loading ? "Loading..." : isLoginState ? "Login" : "Sign Up"}
+          {isLoginState ? "Login" : "Sign Up"}
         </button>
       </p>
 

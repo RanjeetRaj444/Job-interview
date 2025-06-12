@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import ApplyPage from "./pages/ApplyPage";
 import RecruiterPage from "./pages/RecruiterPage";
 import Navigation from "./components/Navigation";
@@ -14,26 +9,38 @@ import PrivateRoutes from "./components/PrivateRoutes";
 
 function App() {
   return (
-    <Router>
-      <div className="app">
-        <Navigation />
-        <main className="main-content">
-          <Routes>
-            <Route path="/apply" element={<ApplyPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/recruiter" element={<RecruiterPage />} />
-            <Route
-              path="/"
-              element={
-                <PrivateRoutes>
-                  <Navigate to="/apply" replace />{" "}
-                </PrivateRoutes>
-              }
-            />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <div className="app">
+      <Navigation />
+      <main className="main-content">
+        <Routes>
+          <Route
+            path="/apply"
+            element={
+              <PrivateRoutes>
+                <ApplyPage />
+              </PrivateRoutes>
+            }
+          />
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/recruiter"
+            element={
+              <PrivateRoutes>
+                <RecruiterPage />
+              </PrivateRoutes>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              // <PrivateRoutes>
+              <Navigate to="/apply" replace />
+              // </PrivateRoutes>
+            }
+          />
+        </Routes>
+      </main>
+    </div>
   );
 }
 
