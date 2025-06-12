@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
   async function handleSignUp(e) {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:8080/api/register", {
+      const res = await fetch("https://job-interview-sm41.onrender.com/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }) => {
   async function handleLogin(e) {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:8080/api/login", {
+      const res = await fetch("https://job-interview-sm41.onrender.com/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
