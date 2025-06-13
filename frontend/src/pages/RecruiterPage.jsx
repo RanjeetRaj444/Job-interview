@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { getInterviewRequests, acceptInterviewRequest } from "../services/api";
 import { connectSocket } from "../services/socket";
 import "../styles/recruiterPage.css";
@@ -13,10 +13,9 @@ const RecruiterPage = () => {
   const [acceptingIds, setAcceptingIds] = useState(new Set());
   const [isConnected, setIsConnected] = useState(false);
   const [canPlayAudio, setCanPlayAudio] = useState(false);
-  const audio = new Audio("/ting.mp3"); // Make sure this is in the public folder
+  const audioRef = useRef(new Audio("/ting.mp3"));
 
   useEffect(() => {
-    // Enable sound only after user interaction
     const enableAudio = () => {
       setCanPlayAudio(true);
       window.removeEventListener("click", enableAudio);
@@ -35,41 +34,41 @@ const RecruiterPage = () => {
         setLoading(false);
       }
 
-      const socket = connectSocket();
+      try {
+        const socket = await connectSocket();
 
-      socket.on("connect", () => {
         setIsConnected(true);
-      });
 
-      socket.on("disconnect", () => {
-        setIsConnected(false);
-      });
+        socket.on("disconnect", () => {
+          setIsConnected(false);
+        });
 
-      // 🔔 Handle new interview request
-      socket.on("new_interview_request", (newRequest) => {
-        setRequests((prev) => [newRequest, ...prev]);
+        socket.on("new_interview_request", (newRequest) => {
+          setRequests((prev) => [newRequest, ...prev]);
 
-        if (canPlayAudio) {
-          audio.play().catch((err) => {
-            console.error("Audio play error:", err);
-          });
-        }
+          if (canPlayAudio) {
+            audioRef.current.play().catch((err) => {
+              console.error("Audio play error:", err);
+            });
+          }
 
-        showToast(
-          `🔔 New interview request received: ${newRequest.name}`,
-          "success"
-        );
-        console.log(newRequest);
-      });
+          showToast(
+            `🔔 New interview request received: ${newRequest.name}`,
+            "success"
+          );
+        });
 
-      // ✅ Handle acceptance updates
-      socket.on("request_accepted", (updatedRequest) => {
-        setRequests((prev) =>
-          prev.map((req) =>
-            req._id === updatedRequest._id ? updatedRequest : req
-          )
-        );
-      });
+        socket.on("request_accepted", (updatedRequest) => {
+          setRequests((prev) =>
+            prev.map((req) =>
+              req._id === updatedRequest._id ? updatedRequest : req
+            )
+          );
+        });
+      } catch (error) {
+        console.error("Socket connection failed:", error);
+        setError("Socket connection failed");
+      }
     };
 
     loadDataAndConnect();
