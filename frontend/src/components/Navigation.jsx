@@ -17,6 +17,7 @@ const Navigation = () => {
   if (redirectToHome) {
     return <Navigate to="/" replace />;
   }
+  // console.log(token)
   return (
     <nav className="navigation">
       <div className="nav-container">
@@ -24,7 +25,14 @@ const Navigation = () => {
           JobPlatform
         </Link>
         <ul className="nav-links">
-          <li style={{ display: token == "admin-token" ? "none" : "" }}>
+          <li
+            style={{
+              display:
+                token == "admin-token" || token == null || token == ""
+                  ? "none"
+                  : "",
+            }}
+          >
             <Link
               to="/apply"
               className={`nav-link ${
@@ -46,7 +54,17 @@ const Navigation = () => {
             </Link>
           </li>
           <li>
-            <button onClick={handleLogout}>
+            <button
+              className="nav-link"
+              style={{
+                fontSize: "2rem",
+                padding: "0",
+                border: "none",
+                backgroundColor: "white",
+                display: "flex",
+              }}
+              onClick={handleLogout}
+            >
               {token && token != "" && <IoMdLogIn />}
             </button>
           </li>

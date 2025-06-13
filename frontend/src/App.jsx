@@ -10,6 +10,7 @@ import { useAuth } from "./context/AuthContext";
 
 function App() {
   const { token } = useAuth();
+  // console.log(token)
   return (
     <div className="app">
       <Navigation />

@@ -63,6 +63,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     if (formData.email == "admin@gmail.com" && formData.password == "admin") {
       localStorage.setItem("job-user-token", "admin-token");
+      setToken(localStorage.getItem("job-user-token"));
       showToast("Welcome Boss", "success");
       setAdmin(true);
       setLoading(false);
